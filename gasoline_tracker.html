@@ -4,17 +4,16 @@
 <title>Page Title</title>
 <style>
 :root{
-	--body_background: #1f2937;
+	--body_background: rgba(0, 0, 0, 1);
+	/*#1f2937;*/
 
 }
 body{
 	background: var(--body_background);
+
 }
 canvas{
-	background: white !important;
-	position: absolute;
-	top: 0;
-	left: 0;
+
 	z-index: 9999;
 
 }
@@ -55,18 +54,20 @@ const randomFrom = function(small,big){
 }
 
 class Orbit {
-	constructor(container_width,container_height,num){
+	constructor(container_width,container_height,num,x,y){
 
 
 		this.container_height = container_height ;
 		this.container_width = container_width;
-		this.x = this.container_width / 2;
+		this.transform_X = x;
+		this.transform_Y = y;
+		this.x = this.container_width / 2 ;
 
 		/*
 		num indicate the height from the center of the container to the actual element (orbit)
 		*/
-		this.y = this.container_height /2 + num * 2;
-
+		this.y = this.container_height /2 + num * 2 ;
+    
         this.radius = num * 2;
 		this.angle =  Math.atan2(this.radius,0) + Math.PI/2;
 		/* more outter orbit will have higher speed */
@@ -80,22 +81,19 @@ class Orbit {
 	}
 
 	draw(){
-		//debugger;
-		context.globalCompositeOperation = 'source-over';
-		if(this.color_degree === 'transparent'){
-context.strokeStyle = `transparent`;
-//debugger
-		} 
-		else {
-			context.strokeStyle = `hsla(${this.color_degree}, 100%, 50%, 1)`;
-		}
 
+		if(this.color_degree === 'transparent') 
+			context.strokeStyle = `transparent`;
+		else 
+			context.strokeStyle = `hsla(${this.color_degree}, 100%, 50%, 1)`;
+		
+console.log()
 		//console.log(`hsla(${this.color_degree}, 100%, 50%, 1)`)
 		context.lineWidth = this.line_size;
 		context.beginPath();
-		context.moveTo(this.lastX,this.lastY);
+		context.moveTo(this.lastX + this.transform_X,this.lastY + this.transform_Y);
 		
-		context.lineTo(this.x,this.y);
+		context.lineTo(this.x + this.transform_X,this.y + + this.transform_Y);
 		//console.log(this.x,this.y)
 		context.stroke();
 		context.closePath();
@@ -113,7 +111,7 @@ context.strokeStyle = `transparent`;
 			const current_Y = this.y;		
 
 			const slope = ((center_Y - current_Y)/(center_X - current_X))
-			//-(rise/run);
+
 			const radian = Math.atan(slope);
 			this.color_degree =  Math.floor(radian*(180/Math.PI));		
 if(current_X < center_X && current_Y < center_Y) this.color_degree += 180;	
@@ -123,9 +121,9 @@ if(current_X < center_X && current_Y < center_Y) this.color_degree += 180;
 			if(current_Y > center_Y &&  !isFinite(slope) && slope > 0) this.color_degree = 270;		
 			if(current_X < center_X && !slope ) this.color_degree = 180; 
 			if(isNaN(this.color_degree)){this.color_degree= 0;}
-			this.x = this.container_width/2 + Math.sin(-this.angle) * this.radius;
+			this.x = this.container_width/2 + Math.sin(-this.angle) * this.radius ;
 			this.y = this.container_height/2 + Math.cos(-this.angle) * this.radius;
-			this.angle += this.speed;
+			this.angle += this.speed ;
       if(this.firstTime){
       	this.color_degree = "transparent";
 				this.firstTime =  false;
@@ -142,7 +140,7 @@ const orbit_num = 75;
 let num = orbit_num;
 const orbit_array = [];
 while(num--){
-	const orbit = new Orbit(window_Width/3,window_Height/3,num/1);
+	const orbit = new Orbit(window_Width/3,window_Height/3,num/1,500,200);
 	orbit_array.push(orbit);
 }
 
@@ -153,7 +151,7 @@ for(let i =0; i< 5;i++){
 	//console.log('what')
 	while(num--){
 
-			const orbit = new Orbit(window_Width/3,window_Height/3,(Math.random() * (orbit_num/3*2) + orbit_num/3)/1);
+			const orbit = new Orbit(window_Width/3,window_Height/3,(Math.random() * (orbit_num/3*2) + orbit_num/3)/1,500,200);
 			orbit_array.push(orbit)
 		
 	}
@@ -163,10 +161,10 @@ for(let i =0; i< 5;i++){
 function update(){
 
   window.frame = window.requestAnimationFrame(update);
-  context.globalCompositeOperation = 'destination-over'
-//context.fillStyle = 'rgba(0, 0, 0,0.1)';
-	//context.fillRect(0,0,window_Width,window_Height);
-	//context.clearRect(0,0,window_Width,window_Height);
+
+context.fillStyle = 'rgba(0,0,0,0.1)';
+	context.fillRect(0,0,window_Width,window_Height);
+
 	orbit_array.forEach(orbit=>{
 			let updateCount = 3;
 		while(updateCount--){
@@ -178,6 +176,7 @@ function update(){
 }
             
 update();
+
 </script>
 
 </body>
